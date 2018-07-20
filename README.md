@@ -1,4 +1,4 @@
-# SimpleCrawler
+﻿# SimpleCrawler
 简易的Crawler程序，获取页面数据，写入json文件，并保存到MongoDB。
 
 程序依赖三个npm包：`superagent `、`cheerio`、`mongoose`，和nodejs的`fs`模块
@@ -14,3 +14,5 @@
 `npm install` 安装依赖
 
 `node crawler.js` 运行程序，刷新项目目录，打开newBooks.json即可查看获取的数据；或者打开可视化工具，刷新数据库集合，也可以查看；或者到MongoDB安装的bin目录下执行`mongo`连接数据库查看。
+
+注：获取某些图片src数据再渲染到页面可能会出现跨域问题，参考https://images.weserv.nl/#quick-reference图片缓存服务网站。

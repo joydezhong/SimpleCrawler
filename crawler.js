@@ -18,6 +18,7 @@ var newBookSchema = new Schema({
     bookId: Number,
     grade: String,
     bookInfo: String,
+    bookImg: String,
     description: String
 });
 var NewBook = mongoose.model('NewBook', newBookSchema);
@@ -48,7 +49,7 @@ superagent
                 bookId: bookId,
                 grade: $(value).find(".detail-frame .rating .font-small").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
                 bookInfo: $(value).find(".detail-frame .color-gray").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                bookImg: $(value).find(".cover img").attr("src"),
+                bookImg: $(value).find(".cover img").attr("src").replace(/^https:/g,""),
                 description: $(value).find(".detail-frame .detail").text().replace(/\ +/g,"").replace(/[\r\n]/g,"")
             };
             result.push(oneBook);
