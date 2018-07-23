@@ -20,13 +20,10 @@ var topBookSchema = new Schema({
     copyrightInfo: String,
     grade: String,
     remark: String,
-    bookImg: String
+    bookImg: String,
+    description: String
 });
-var TopBook = mongoose.model('topBook', topBookSchema, 'topbooklist');
-
-
-
-function getPageData(page){
+var TopBook = mongoose.model('topBook', topBookSchema, 'topbooks');
 
     superagent.get("https://book.douban.com/top250?start=0").end((req, response)=>{
 
@@ -54,7 +51,8 @@ function getPageData(page){
                 copyrightInfo: $(value).find(".item td p.pl").text(),
                 grade: $(value).find(".item td .star .rating_nums").text(),
                 remark: $(value).find(".item td .star .pl").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                bookImg: $(value).find(".item td .nbg img").attr("src").replace(/^https:/g,"")
+                bookImg: $(value).find(".item td .nbg img").attr("src").replace(/^https:/g,""),
+                description: $(value).find(".item td .quote .inq").text()
             };
             result.push(oneBook);
 
@@ -84,15 +82,4 @@ function getPageData(page){
             }
         })
 
-        //数组长度为0 没有数据 请求终止
-        if(result.length == 0){
-            req.abort();
-            console.log('GG，没有数据了！');
-        }
-
-
     })
-
-}
-
-

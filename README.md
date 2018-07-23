@@ -13,7 +13,7 @@
 
 基于`events`和`request`的多页数据获取（需npm安装模块）：pageEvent.js
 
-基于`eventproxy`的多页数据获取（需npm安装模块,更加简单）：pageEventproxy.js
+基于`eventproxy`的多页数据获取（需npm安装模块,更加易懂）：pageEventproxy.js
 
 `npm install` 安装依赖
 
