@@ -13,22 +13,22 @@ var mongourl = 'mongodb://localhost/Douban';
 mongoose.connect(mongourl);
 var Schema = mongoose.Schema;
 //创建模型
-var focusBookGouSchema = new Schema({
+var topBookSchema = new Schema({
     title: String,
+    enTitle: String,
     bookId: Number,
     copyrightInfo: String,
     grade: String,
     remark: String,
-    bookImg: String,
-    price: Number,
-    buyHref: String,
-    eBookHref: String
+    bookImg: String
 });
-var FocusBookGou = mongoose.model('FocusBookGou', focusBookGouSchema, 'focusnobook');
+var TopBook = mongoose.model('topBook', topBookSchema, 'topbooklist');
 
-superagent
-    .get("https://book.douban.com/chart?subcat=I")
-    .end((error, response)=>{
+
+
+function getPageData(page){
+
+    superagent.get("https://book.douban.com/top250?start=0").end((req, response)=>{
 
         //获取页面文档数据
         var content = response.text;
@@ -40,36 +40,34 @@ superagent
         var result = [];
 
         //分析文档结构 先获取每个li 再遍历里面的内容（此时每个li里面就存放着我们想要获取的数据）
-        $(".chart-dashed-list li").each(function(index,value){
+        $(".indent table").each(function(index,value){
 
             //提取url链接中的id
-            var address = $(value).find(".media__img a").attr("href");
+            var address = $(value).find(".item td a").attr("href");
             var bookId = address.replace(/[^0-9]/ig,"");
 
             //将获取的数据以对象的形式添加到数组中
             var oneBook = {
-                title: $(value).find(".media__body h2 a").text(),
+                title: $(value).find(".item td .pl2 a").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
+                enTitle: $(value).find(".item td .pl2 span").text(),
                 bookId: bookId,
-                copyrightInfo: $(value).find(".media__body .subject-abstract").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                grade: $(value).find(".media__body .w250 .font-small").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                remark: $(value).find(".media__body .w250 .ml8").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                bookImg: $(value).find(".media__img a img").attr("src").replace(/^https:/g,""),
-                price: $(value).find(".media__body .w250 .buy-info a").text().replace(/[^0-9]/ig,""),
-                buyHref: $(value).find(".media__body .w250 .cart-info a").attr('href'),
-                eBookHref: $(value).find(".media__body .ll .ebook-link a").attr('href')
+                copyrightInfo: $(value).find(".item td p.pl").text(),
+                grade: $(value).find(".item td .star .rating_nums").text(),
+                remark: $(value).find(".item td .star .pl").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
+                bookImg: $(value).find(".item td .nbg img").attr("src").replace(/^https:/g,"")
             };
             result.push(oneBook);
 
             //将每个书本信息实例化到newBook模型中
-            var focusBookXugou = new FocusBookGou(oneBook);
+            var topBook = new TopBook(oneBook);
 
             //保存到mongodb
-            focusBookXugou.save(function(err){
-               if(err){
-                   console.log('保存失败：'+ err);
-                   return;
-               }
-               console.log("OJBK!");
+            topBook.save(function(err){
+                if(err){
+                    console.log('保存失败：'+ err);
+                    return;
+                }
+                console.log("OJBK!");
             });
 
         });
@@ -78,11 +76,23 @@ superagent
         result = JSON.stringify(result);
 
         //将数组输出到json文件里 刷新目录  即可看到当前文件夹多出一个boss.json文件
-        fs.writeFile("focusNoBook.json", result, "utf-8", (error)=>{
+        fs.writeFile("topBook.json", result, "utf-8", (error)=>{
 
             //监听错误，如正常输出，则打印null
             if(error == null){
                 console.log("恭喜您，数据爬取成功!请打开json文件");
             }
         })
+
+        //数组长度为0 没有数据 请求终止
+        if(result.length == 0){
+            req.abort();
+            console.log('GG，没有数据了！');
+        }
+
+
     })
+
+}
+
+
