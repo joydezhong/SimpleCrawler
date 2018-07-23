@@ -11,6 +11,10 @@
 
 主要文件：crawler.js
 
+基于`events`和`request`的多页数据获取（需npm安装模块）：pageEvent.js
+
+基于`eventproxy`的多页数据获取（需npm安装模块,更加简单）：pageEventproxy.js
+
 `npm install` 安装依赖
 
 `node crawler.js` 运行程序，刷新项目目录，打开newBooks.json即可查看获取的数据；或者打开可视化工具，刷新数据库集合，也可以查看；或者到MongoDB安装的bin目录下执行`mongo`连接数据库查看。
