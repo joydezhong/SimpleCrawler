@@ -21,7 +21,8 @@ var topBookSchema = new Schema({
     copyrightInfo: String,
     grade: String,
     remark: String,
-    bookImg: String
+    bookImg: String,
+    description: String
 });
 var TopBook = mongoose.model('topBook', topBookSchema, 'topbooklist');
 
@@ -64,7 +65,8 @@ for (let desUrl of desUrlList){
                 copyrightInfo: $(value).find(".item td p.pl").text(),
                 grade: $(value).find(".item td .star .rating_nums").text(),
                 remark: $(value).find(".item td .star .pl").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                bookImg: $(value).find(".item td .nbg img").attr("src").replace(/^https:/g,"")
+                bookImg: $(value).find(".item td .nbg img").attr("src").replace(/^https:/g,""),
+                description: $(value).find(".item td .quote .inq").text()
             };
 
             resultArr.push(oneBook);
