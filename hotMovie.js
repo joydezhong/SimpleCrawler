@@ -13,18 +13,21 @@ var mongourl = 'mongodb://localhost/Douban';
 mongoose.connect(mongourl);
 var Schema = mongoose.Schema;
 //创建模型
-var newBookSchema = new Schema({
+var newMovieSchema = new Schema({
     title: String,
-    bookId: Number,
+    movieId: Number,
     grade: Number,
-    bookInfo: String,
-    bookImg: String,
-    description: String
+    release: Number,
+    duration: String,
+    region: String,
+    actors: String,
+    movieImg: String,
+    buyHref: String
 });
-var NewBook = mongoose.model('NewBook', newBookSchema, 'newbooks');
+var NewMovie = mongoose.model('NewMovie', newMovieSchema, 'hotMovies');
 
 superagent
-    .get("https://book.douban.com/latest?icn=index-latestbook-all")
+    .get("https://movie.douban.com/cinema/nowplaying/guangzhou/")
     .end((error, response)=>{
 
         //获取页面文档数据
@@ -37,30 +40,28 @@ superagent
         var result = [];
 
         //分析文档结构 先获取每个li 再遍历里面的内容（此时每个li里面就存放着我们想要获取的数据）
-        $(".cover-col-4 li").each(function(index,value){
+        $("#nowplaying .mod-bd .lists>li").each(function(index,value){
 
-            //提取url链接中的id
-            var address = $(value).find(".cover").attr("href");
-            var bookId = address.replace(/[^0-9]/ig,"");
-
-            var gradeStr = $(value).find(".detail-frame .rating .font-small").text().replace(/\ +/g,"").replace(/[\r\n]/g,"");
-
+            var gradeStr = $(value).attr("data-score");
             //将获取的数据以对象的形式添加到数组中
-            var oneBook = {
-                title: $(value).find(".detail-frame h2 a").text(),
-                bookId: bookId,
+            var oneMovie = {
+                title: $(value).attr("data-title"),
+                movieId: $(value).attr("id"),
                 grade: Number(gradeStr) ? Number(gradeStr) : 0,
-                bookInfo: $(value).find(".detail-frame .color-gray").text().replace(/\ +/g,"").replace(/[\r\n]/g,""),
-                bookImg: $(value).find(".cover img").attr("src").replace(/^https:/g,""),
-                description: $(value).find(".detail-frame .detail").text().replace(/\ +/g,"").replace(/[\r\n]/g,"")
+                release: $(value).attr("data-release"),
+                duration: $(value).attr("data-duration"),
+                region: $(value).attr("data-region"),
+                actors: $(value).attr("data-actors"),
+                movieImg: $(value).find("ul .poster a img").attr("src").replace(/^https:/g,""),
+                buyHref: $(value).find("ul .sbtn a").attr("href")
             };
-            result.push(oneBook);
+            result.push(oneMovie);
 
             //将每个书本信息实例化到newBook模型中
-            var newBook = new NewBook(oneBook);
+            var newMovie = new NewMovie(oneMovie);
 
             //保存到mongodb
-            newBook.save(function(err){
+            newMovie.save(function(err){
                if(err){
                    console.log('保存失败：'+ err);
                    return;
@@ -74,7 +75,7 @@ superagent
         result = JSON.stringify(result);
 
         //将数组输出到json文件里 刷新目录  即可看到当前文件夹多出一个boss.json文件
-        fs.writeFile("newBooks.json", result, "utf-8", (error)=>{
+        fs.writeFile("newMovies.json", result, "utf-8", (error)=>{
 
             //监听错误，如正常输出，则打印null
             if(error == null){
