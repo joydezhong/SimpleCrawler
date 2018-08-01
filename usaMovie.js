@@ -1,32 +1,8 @@
 //导入包
-const http = require("http");
-const path = require("path");
-const url = require("url");
 const fs = require("fs");
-const mongoose = require("mongoose");
-
-const superagent = require("superagent");
-const cheerio = require("cheerio");
 
 // //连接本地mongodb数据库Douban
 var mongourl = 'mongodb://localhost/Douban';
-// var Schema = mongoose.Schema;
-// //创建模型
-// var usaMovieSchema = new Schema({
-//     title: String,
-//     movieId: Number,
-//     grade: String,
-//     remark: String,
-//     movieImg: String,
-//     description: String
-// });
-// var UsaMovie = mongoose.model('UsaMovie', usaMovieSchema, 'usaMovies');
-//
-// //创建集合
-// db.createCollection(usaMovies, function(err, res){
-//     if (err) throw err;
-//     console.log('OJBK');
-// });
 
 
 var MongoClient = require('mongodb').MongoClient;
@@ -49,14 +25,14 @@ MongoClient.connect(mongourl, function(err, db){
         console.log("创建集合成功");
 
         //插入数据
-        var filename = "D:\\myMEAN\\myPaCong\\SimpleCrawler\\us_box.json";
+        var filename = "D:\\myMEAN\\myPaCong\\SimpleCrawler\\us_box.json";  //json文件的绝对路径
         console.log("读取...");
         var fileContent = fs.readFileSync(filename);
         if(fileContent){
             console.log("文件长度"+fileContent.length);
             //写入数据库
             var tbfile = JSON.parse(fileContent);
-            dbase.collection('usaMovies').insertOne(tbfile, function(err, res){
+            dbase.collection('usaMovies').insert(tbfile, function(err, res){
                 if(err)throw err;
                 console.log("tbfile文件写入数据库成功");
                 db.close();
