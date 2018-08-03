@@ -20,7 +20,8 @@ var newMusicSchema = new Schema({
     days: String,
     movieImg: String,
     upRate: Number,
-    info: String
+    info: String,
+    trend: Number
 });
 var NewMusic = mongoose.model('NewMusic', newMusicSchema, 'newMusics');
 
@@ -42,6 +43,14 @@ superagent
 
             //提取url链接中的id
             var imgHref = $(value).find(".face img").attr("src");
+            //判断趋势
+            if($(value).find(".trend").hasClass('arrow-up')){
+                var trend = 1;
+            }else if($(value).find(".trend").hasClass('arrow-down')){
+                var trend = -1;
+            }else if($(value).find(".trend").hasClass('arrow-stay')){
+                var trend = 0;
+            }
             //将获取的数据以对象的形式添加到数组中
             var oneMusic = {
                 title: $(value).find(".intro h3 a").text(),
@@ -50,7 +59,8 @@ superagent
                 days: $(value).find(".days").text(),
                 movieImg: imgHref ? imgHref.replace(/^https:/g,"") : "",
                 upRate: $(value).find(".trend").text(),
-                info: $(value).find(".intro p").text()
+                info: $(value).find(".intro p").text(),
+                trend: trend
             };
             result.push(oneMusic);
 
