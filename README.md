@@ -24,3 +24,5 @@
 **更新**
 
 基于nodejs的`fs`模块读取json文件并写入mongodb数据库：usaMovie.js
+
+已知数据ID序列的情况下轮询获取数据详情并写入mongodb数据库：bookDetail.js
